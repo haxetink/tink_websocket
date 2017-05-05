@@ -9,6 +9,7 @@ import tink.http.Response;
 using tink.io.Source;
 using tink.CoreApi;
 
+@:require(tink_http_middleware)
 class WebSocket implements MiddlewareObject {
 	var ws:tink.websocket.Handler;
 	
