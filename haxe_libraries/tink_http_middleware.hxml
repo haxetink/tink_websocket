@@ -1,0 +1,7 @@
+# @install: lix --silent download https://github.com/kevinresol/tink_http_middleware/archive/92e7b9404ccfea433c644ae80402c8d745cb847a.tar.gz into tink_http_middleware/0.1.0/github/92e7b9404ccfea433c644ae80402c8d745cb847a
+-D tink_http_middleware=0.1.0
+-cp ${HAXESHIM_LIBCACHE}/tink_http_middleware/0.1.0/github/92e7b9404ccfea433c644ae80402c8d745cb847a/src
+
+-lib tink_http
+-lib mime
+-lib asys

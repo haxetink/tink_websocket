@@ -1,0 +1,16 @@
+{
+  "name": "tink_websocket",
+  "license": "MIT",
+  "tags": [
+    "websocket"
+  ],
+  "classPath": "src",
+  "contributors": [
+    "kevinresol"
+  ],
+  "releasenote": "initial release",
+  "version": "0.0.0",
+  "dependencies": {
+    "tink_http": ""
+  }
+}
