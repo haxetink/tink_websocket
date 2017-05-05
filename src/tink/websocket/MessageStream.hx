@@ -18,30 +18,20 @@ abstract MessageStream<Quality>(Stream<Message, Quality>) from Stream<Message, Q
 	
 	@:to
 	public inline function toChunkStream():Stream<Chunk, Quality>
-		return toChunkStreamWithKey(Random);
+		return toChunkStreamWithKey(MaskingKey.random);
 	
 	@:to
 	public inline function toFrameStream():Stream<Frame, Quality>
-		return toFrameStreamWithKey(Random);
+		return toFrameStreamWithKey(MaskingKey.random);
 	
-	public function toChunkStreamWithKey(key:KeyType):Stream<Chunk, Quality>
+	public function toChunkStreamWithKey(key:Void->MaskingKey):Stream<Chunk, Quality>
 		return toFrameStreamWithKey(key).map(function(f:Frame) return f.toChunk());
 	
-	public function toFrameStreamWithKey(key:KeyType):Stream<Frame, Quality>
-		return this.map(function(message) return Frame.ofMessage(message, switch key {
-			case None: null;
-			case Fixed(k): k;
-			case Random: MaskingKey.random();
-		}));
+	public function toFrameStreamWithKey(key:Void->MaskingKey):Stream<Frame, Quality>
+		return this.map(function(message) return Frame.ofMessage(message, key()));
 		
 	public static inline function lift<Q>(s:Stream<Message, Q>):MessageStream<Q>
 		return s;
-}
-
-enum KeyType {
-	None;
-	Fixed(key:MaskingKey);
-	Random;
 }
 
 class MessageRegrouper {
