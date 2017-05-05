@@ -21,7 +21,6 @@ class WebSocket implements MiddlewareObject {
 			var header:IncomingHandshakeRequestHeader = req.header;
 			return switch [header.validate(), req.body] {
 				case [Success(_), Plain(src)]:
-					src.all().handle(function(c) trace('chunk:' + c.sure()));
 					Future.sync(new OutgoingResponse(
 						new OutgoingHandshakeResponseHeader(header.key),
 						(ws(src.parseStream(new Parser())):Stream<Chunk, Noise>)
