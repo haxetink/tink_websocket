@@ -1,8 +1,11 @@
-# Tinkerbell WebSocket
+# Tinkerbell WebSocket 
 
-## Handler
+[![Build Status](https://travis-ci.org/haxetink/tink_websocket.svg)](https://travis-ci.org/haxetink/tink_websocket)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/haxetink/public)
 
 > WebSocket is a computer communications protocol, providing full-duplex communication channels over a single TCP connection.
+
+## Handler
 
 For each connection, there is a stream of incoming messages (chunk of bytes) and a stream of outgoing messages.
 So, a websocket handler is `RealStream<Chunk>->IdealStream<Chunk>` where the `RealStream` is the incoming stream
