@@ -17,17 +17,17 @@ abstract MessageStream<Quality>(Stream<Message, Quality>) from Stream<Message, Q
 		return s.regroup(MessageRegrouper.get());
 	
 	@:to
-	public inline function toChunkStream():Stream<Chunk, Quality>
-		return toChunkStreamWithKey(MaskingKey.random);
+	public inline function toUnmaskedChunkStream():Stream<Chunk, Quality>
+		return toMaskedChunkStream(function() return null);
 	
 	@:to
-	public inline function toFrameStream():Stream<Frame, Quality>
-		return toFrameStreamWithKey(MaskingKey.random);
+	public inline function toUnmaskedFrameStream():Stream<Frame, Quality>
+		return toMaskedFrameStream(function() return null);
 	
-	public function toChunkStreamWithKey(key:Void->MaskingKey):Stream<Chunk, Quality>
-		return toFrameStreamWithKey(key).map(function(f:Frame) return f.toChunk());
+	public function toMaskedChunkStream(key:Void->MaskingKey):Stream<Chunk, Quality>
+		return toMaskedFrameStream(key).map(function(f:Frame) return f.toChunk());
 	
-	public function toFrameStreamWithKey(key:Void->MaskingKey):Stream<Frame, Quality>
+	public function toMaskedFrameStream(key:Void->MaskingKey):Stream<Frame, Quality>
 		return this.map(function(message) return Frame.ofMessage(message, key()));
 		
 	public static inline function lift<Q>(s:Stream<Message, Q>):MessageStream<Q>

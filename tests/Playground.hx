@@ -27,7 +27,7 @@ class Playground {
 			var timer = new haxe.Timer(1000);
 			timer.run = function() pings.yield(Data(Message.Ping(tink.Chunk.EMPTY)));
 			
-			return s.toChunkStreamWithKey(function() return null).idealize(function(o) {
+			return s.toUnmaskedChunkStream().idealize(function(o) {
 				trace(o);
 				return Empty.make();
 			});
