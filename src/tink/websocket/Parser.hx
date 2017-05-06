@@ -44,7 +44,7 @@ class Parser implements StreamParserObject<Chunk> {
 			case -1 | -2:
 				length = 0;
 				for(i in 0...required) {
-					length = length << 8 + cursor.currentByte;
+					length = (length << 8) + cursor.currentByte;
 					cursor.next();
 				}
 				length += 2 + required + (mask ? 4 : 0);

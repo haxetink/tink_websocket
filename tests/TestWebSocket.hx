@@ -134,7 +134,7 @@ class TestWebSocket {
 						return c < n ? Resume : Finish;
 					});
 				
-				return MessageStream.lift(sender).toChunkStream();
+				return MessageStream.lift(sender).toUnmaskedChunkStream();
 			});
 			
 			tink.tcp.nodejs.NodejsConnector.connect({host: host, port: port}, handler).handle(function(o) trace(Std.string(o)));
