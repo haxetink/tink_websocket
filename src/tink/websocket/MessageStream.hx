@@ -6,8 +6,24 @@ import tink.streams.Stream;
 using tink.CoreApi;
 
 @:forward
-abstract MessageStream<Quality>(Stream<Message, Quality>) from Stream<Message, Quality> to Stream<Message, Quality> {
+abstract MessageStream<Quality>(Stream<Message, Quality>) to Stream<Message, Quality> {
 	
+	public inline function append(other:MessageStream<Quality>):MessageStream<Quality>
+		return this.append(other);
+		
+	public inline function prepend(other:MessageStream<Quality>):MessageStream<Quality>
+		return this.prepend(other);
+		
+	public inline function filter(f:Filter<Message, Quality>):MessageStream<Quality>
+		return this.filter(f);
+		
+	public inline function blend(other:MessageStream<Quality>):MessageStream<Quality>
+		return this.blend(other);
+  
+	@:from // `@:from` has higher priority than `from`, this prevents the value being inferred as chunk/frame stream
+	public static inline function lift<Q>(s:Stream<Message, Q>):MessageStream<Q>
+		return cast s; // FIXME: the `cast` is to mitigate "Recursive implicit cast"
+		
 	@:from
 	public static inline function ofChunkStream<Q>(s:Stream<Chunk, Q>):MessageStream<Q>
 		return ofFrameStream(s.map(Frame.fromChunk));
@@ -29,9 +45,6 @@ abstract MessageStream<Quality>(Stream<Message, Quality>) from Stream<Message, Q
 	
 	public function toMaskedFrameStream(key:Void->MaskingKey):Stream<Frame, Quality>
 		return this.map(function(message) return Frame.ofMessage(message, key()));
-		
-	public static inline function lift<Q>(s:Stream<Message, Q>):MessageStream<Q>
-		return s;
 }
 
 class MessageRegrouper {

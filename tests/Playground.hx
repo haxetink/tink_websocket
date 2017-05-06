@@ -17,9 +17,9 @@ class Playground {
 			
 			var pings = new Accumulator();
 			
-			s = s.filter(function(i:Message) return i.match(Message.Text(_))).blend(pings);
+			var out = s.filter(function(i:Message) return i.match(Message.Text(_))).blend(pings);
 			
-			s.forEach(function(m) {
+			out.forEach(function(m) {
 				trace(Date.now().toString() + ': Sending:' + Std.string(m));
 				return Resume;
 			}).handle(function(_) {});
@@ -27,7 +27,7 @@ class Playground {
 			var timer = new haxe.Timer(1000);
 			timer.run = function() pings.yield(Data(Message.Ping(tink.Chunk.EMPTY)));
 			
-			return s.toUnmaskedChunkStream().idealize(function(o) {
+			return out.toUnmaskedChunkStream().idealize(function(o) {
 				trace(o);
 				return Empty.make();
 			});
