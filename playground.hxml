@@ -1,0 +1,7 @@
+-cp tests
+-main Playground
+-lib hxnodejs
+-lib tink_websocket
+-lib tink_tcp
+-js bin/playground.js
+-cmd node bin/playground.js
