@@ -5,5 +5,5 @@ import tink.streams.IdealStream;
 import tink.streams.RealStream;
 
 interface Client {
-	function connect(send:IdealStream<Message>):RealStream<Message>;
+	function connect(outgoing:IdealStream<Message>):RealStream<Message>;
 }

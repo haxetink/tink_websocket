@@ -19,15 +19,14 @@ class JsClient implements Client {
 	public function new(url)
 		this.url = url;
 	
-	public function connect(send:IdealStream<Message>):RealStream<Message> {
+	public function connect(outgoing:IdealStream<Message>):RealStream<Message> {
 		var ws = new WebSocket(url);
 		ws.binaryType = BinaryType.ARRAYBUFFER;
 		
 		var trigger = Signal.trigger();
 		var incoming = new SignalStream(trigger.asSignal());
 		
-		var opened = Future.trigger();
-		ws.onopen = function() opened.trigger(Noise);
+		var opened = Future.async(function(cb) ws.onopen = cb.bind(Noise));
 		ws.onclose = function() trigger.trigger(End);
 		ws.onerror = function(e) trigger.trigger(Fail(Error.withData('WebSocket Error', e)));
 		ws.onmessage = function(m:{data:Any}) trigger.trigger(Data(
@@ -36,14 +35,17 @@ class JsClient implements Client {
 		));
 		
 		opened.handle(function(_) {
-			send.forEach(function(message) {
+			outgoing.forEach(function(message) {
 				switch message {
 					case Text(v): ws.send(v);
 					case Binary(v): ws.send(v.toBytes().getData());
 					default: // not supported
 				}
 				return Resume;
-			}).eager();
+			}).handle(function(o) switch o {
+				case Depleted: // ws.close(); // TODO: calling close() here seems to prevent us from receiving the incoming message
+				case Halted(_): throw 'unreachable';
+			});
 		});
 		
 		return incoming;
