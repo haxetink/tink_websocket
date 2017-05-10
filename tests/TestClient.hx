@@ -22,14 +22,19 @@ class TestClient {
 		var client = new JsClient('ws://echo.websocket.org');
 		client.connect(sender).forEach(function(message:Message) {
 			switch message {
-				case Text(v): asserts.assert(v == 'payload' + ++c);
+				case Text(v): asserts.assert(v == 'payload' + c++);
 				default: asserts.fail('Unexpected message');
 			}
-			if(c == n) asserts.done();
-			return c < n ? Resume : Finish;
+			return if(c < n) {
+				sender.yield(Data(Message.Text('payload$c')));
+				Resume;
+			} else {
+				sender.yield(End);
+				asserts.done();
+				Finish;
+			}
 		}).handle(function(o) trace(Std.string(o)));
-		for(i in 0...n) sender.yield(Data(Message.Text('payload' + (i + 1))));
-		sender.yield(End);
+		sender.yield(Data(Message.Text('payload$c')));
 		return asserts;
 	}
 }

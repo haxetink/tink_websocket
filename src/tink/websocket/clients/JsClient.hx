@@ -43,7 +43,7 @@ class JsClient implements Client {
 				}
 				return Resume;
 			}).handle(function(o) switch o {
-				case Depleted: // ws.close(); // TODO: calling close() here seems to prevent us from receiving the incoming message
+				case Depleted: ws.close();
 				case Halted(_): throw 'unreachable';
 			});
 		});
