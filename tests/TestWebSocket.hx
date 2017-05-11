@@ -2,7 +2,6 @@ package;
 
 import haxe.io.Bytes;
 import tink.streams.Stream;
-import tink.streams.Accumulator;
 import tink.websocket.*;
 import tink.Chunk;
 
@@ -122,7 +121,8 @@ class TestWebSocket {
 		return Future.async(function(cb) {
 			var c = 0;
 			var n = 7;
-			var sender = new Accumulator();
+			var sender = Signal.trigger();
+			var outgoing = new SignalStream(sender);
 			var handler = Connector.wrap(url, function(stream) {
 				MessageStream.ofChunkStream(stream)
 					.forEach(function(message:Message) {
@@ -134,13 +134,13 @@ class TestWebSocket {
 						return c < n ? Resume : Finish;
 					});
 				
-				return MessageStream.lift(sender).toUnmaskedChunkStream();
+				return MessageStream.lift(outgoing).toUnmaskedChunkStream();
 			});
 			
 			tink.tcp.nodejs.NodejsConnector.connect({host: host, port: port}, handler).handle(function(o) trace(Std.string(o)));
 			
-			for(i in 0...n) sender.yield(Data(Message.Text('payload' + (i + 1))));
-			sender.yield(End);
+			for(i in 0...n) sender.trigger(Data(Message.Text('payload' + (i + 1))));
+			sender.trigger(End);
 		});
 	}
 	

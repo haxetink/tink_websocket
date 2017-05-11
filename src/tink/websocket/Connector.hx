@@ -1,6 +1,5 @@
 package tink.websocket;
 
-import tink.streams.Accumulator;
 import tink.streams.Stream;
 import tink.streams.IdealStream;
 import tink.streams.RealStream;
