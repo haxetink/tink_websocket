@@ -7,7 +7,6 @@ import tink.websocket.Message;
 import tink.streams.Stream;
 import tink.streams.IdealStream;
 import tink.streams.RealStream;
-import tink.streams.Accumulator;
 import js.html.*;
 
 using tink.CoreApi;

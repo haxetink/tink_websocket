@@ -2,7 +2,6 @@ package;
 
 import haxe.io.Bytes;
 import tink.streams.Stream;
-import tink.streams.Accumulator;
 import tink.websocket.*;
 import tink.websocket.clients.*;
 import tink.Chunk;
@@ -18,23 +17,23 @@ class TestClient {
 	public function client() {
 		var c = 0;
 		var n = 7;
-		var sender = new Accumulator();
+		var sender = Signal.trigger();
 		var client = new JsClient('ws://echo.websocket.org');
-		client.connect(sender).forEach(function(message:Message) {
+		client.connect(new SignalStream(sender.asSignal())).forEach(function(message:Message) {
 			switch message {
 				case Text(v): asserts.assert(v == 'payload' + c++);
 				default: asserts.fail('Unexpected message');
 			}
 			return if(c < n) {
-				sender.yield(Data(Message.Text('payload$c')));
+				sender.trigger(Data(Message.Text('payload$c')));
 				Resume;
 			} else {
-				sender.yield(End);
+				sender.trigger(End);
 				asserts.done();
 				Finish;
 			}
 		}).handle(function(o) trace(Std.string(o)));
-		sender.yield(Data(Message.Text('payload$c')));
+		sender.trigger(Data(Message.Text('payload$c')));
 		return asserts;
 	}
 }
