@@ -18,7 +18,11 @@ class TestClient {
 		var c = 0;
 		var n = 7;
 		var sender = Signal.trigger();
-		var client = new JsClient('ws://echo.websocket.org');
+		var url = 'ws://echo.websocket.org';
+		var client = 
+			#if nodejs new TcpClient(url);
+			#elseif js new JsClient(url);
+			#end
 		client.connect(new SignalStream(sender.asSignal())).forEach(function(message:Message) {
 			switch message {
 				case Text(v): asserts.assert(v == 'payload' + c++);

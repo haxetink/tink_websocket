@@ -12,3 +12,4 @@ install:
 
 script:
   - npm run travix node
+  - npm run travix js
