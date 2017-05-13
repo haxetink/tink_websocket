@@ -11,7 +11,7 @@ using tink.io.Source;
 
 @:asserts
 @:timeout(10000)
-class TestClient {
+class ClientTest {
 	public function new() {}
 	
 	public function client() {
