@@ -1,6 +1,7 @@
 package;
 
 import haxe.io.Bytes;
+import tink.unit.*;
 import tink.streams.Stream;
 import tink.websocket.*;
 import tink.websocket.clients.*;
@@ -12,17 +13,21 @@ using tink.io.Source;
 @:asserts
 @:timeout(10000)
 class ClientTest {
+	var url = 'ws://echo.websocket.org';
+	
 	public function new() {}
 	
-	public function client() {
+	#if nodejs
+	public function tcp() return run(asserts, new TcpClient(url));
+	// public function http() return run(asserts, new HttpClient(url, new tink.http.clients.NodeClient()));
+	#elseif js
+	public function js() return run(asserts, new JsClient(url));
+	#end
+	
+	function run(asserts:AssertionBuffer, client:Client) {
 		var c = 0;
 		var n = 7;
 		var sender = Signal.trigger();
-		var url = 'ws://echo.websocket.org';
-		var client = 
-			#if nodejs new TcpClient(url);
-			#elseif js new JsClient(url);
-			#end
 		client.connect(new SignalStream(sender.asSignal())).forEach(function(message:Message) {
 			switch message {
 				case Text(v): asserts.assert(v == 'payload' + c++);
@@ -39,5 +44,6 @@ class ClientTest {
 		}).handle(function(o) trace(Std.string(o)));
 		sender.trigger(Data(Message.Text('payload$c')));
 		return asserts;
+		
 	}
 }

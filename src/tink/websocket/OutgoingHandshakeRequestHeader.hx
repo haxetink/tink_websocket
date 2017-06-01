@@ -12,7 +12,7 @@ class OutgoingHandshakeRequestHeader extends OutgoingRequestHeader {
 	public var accept(default, null):String;
 	
 	public function new(url:Url, ?key, ?fields) {
-		super(GET, url.pathWithQuery, null, fields);
+		super(GET, url, null, fields);
 		
 		this.key = switch key {
 			case null: Base64.encode(Sha1.make(Bytes.ofString(Std.string(Math.random()))));
