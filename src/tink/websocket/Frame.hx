@@ -4,7 +4,7 @@ import haxe.ds.Option;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import tink.io.Source;
-import tink.websocket.Message;
+import tink.websocket.RawMessage;
 import tink.Chunk;
 
 @:forward
@@ -22,7 +22,7 @@ abstract Frame(FrameBase) from FrameBase to FrameBase {
 	public static inline function fromChunk(v:Chunk)
 		return FrameBase.fromChunk(v);
 	
-	public static function ofMessage(message:Message, ?maskingKey:MaskingKey):Frame {
+	public static function ofMessage(message:RawMessage, ?maskingKey:MaskingKey):Frame {
 		var opcode = 0;
 		var payload = null;
 		switch message {

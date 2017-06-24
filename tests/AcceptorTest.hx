@@ -13,9 +13,9 @@ class AcceptorTest extends ConnectorTest {
 	
 	public function tcpServer() {
 		
-		var handler = Acceptor.wrap(function(stream) {
+		var handler = Acceptor.wrap(function(i) {
 			// sends back the same frame unmasked
-			return stream.map(function(chunk:Chunk) return Frame.fromChunk(chunk).unmask().toChunk()).idealize(null);
+			return i.stream.idealize(null);
 		});
 		
 		tink.tcp.nodejs.NodejsAcceptor.inst.bind(18088).handle(function(o) switch o {
@@ -34,7 +34,7 @@ class AcceptorTest extends ConnectorTest {
 	
 	function http(port:Int, container:tink.http.Container, asserts:tink.unit.AssertionBuffer) {
 		var handler:tink.http.Handler = function(req) return Future.sync(('done':tink.http.Response.OutgoingResponse));
-		handler = handler.applyMiddleware(new tink.http.middleware.WebSocket(function(stream) return stream.map(function(chunk:Chunk) return Frame.fromChunk(chunk).unmask().toChunk()).idealize(null)));
+		handler = handler.applyMiddleware(new tink.http.middleware.WebSocket(function(i) return i.stream.idealize(null)));
 		
 		container.run(handler).handle(function(o) switch o {
 			case Running(r):

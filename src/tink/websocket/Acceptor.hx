@@ -13,7 +13,7 @@ using tink.CoreApi;
 using tink.io.Source;
 
 class Acceptor {
-	public static function wrap(handler:tink.websocket.Handler, ?onError:Error->Void):tink.tcp.Handler {
+	public static function wrap(handler:ServerHandler, ?onError:Error->Void):tink.tcp.Handler {
 		if(onError == null) onError = function(e) trace(e);
 		
 		return function(i:tink.tcp.Incoming):Future<tink.tcp.Outgoing> {
@@ -27,7 +27,11 @@ class Acceptor {
 									case Failure(e): onError(e);
 								}
 								var reponseHeader = new OutgoingHandshakeResponseHeader(header.key);
-								step(Link((reponseHeader.toString():Chunk), handler(rest.parseStream(new Parser()))));
+								step(Link((reponseHeader.toString():Chunk), handler({
+									clientIp: i.from.toString(),
+									header: header,
+									stream: rest.parseStream(new Parser()),
+								}).toUnmaskedChunkStream()));
 							case Failure(e):
 								onError(e);
 						});

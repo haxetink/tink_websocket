@@ -1,8 +1,6 @@
 package tink.websocket;
 
-import tink.websocket.Message;
-import tink.streams.IdealStream;
-import tink.streams.RealStream;
+using tink.CoreApi;
 
 interface Client {
 	/**
@@ -12,5 +10,5 @@ interface Client {
 	 *  @param outgoing - Outgoing message stream
 	 *  @return Incoming message stream
 	 */
-	function connect(outgoing:IdealStream<Message>):RealStream<Message>;
+	function connect(outgoing:MessageStream<Noise>):MessageStream<Error>;
 }

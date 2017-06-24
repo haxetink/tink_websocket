@@ -18,7 +18,7 @@ class JsClient implements Client {
 	public function new(url)
 		this.url = url;
 	
-	public function connect(outgoing:IdealStream<Message>):RealStream<Message> {
+	public function connect(outgoing:MessageStream<Noise>):MessageStream<Error> {
 		var ws = new WebSocket(url);
 		ws.binaryType = BinaryType.ARRAYBUFFER;
 		
@@ -38,7 +38,6 @@ class JsClient implements Client {
 				switch message {
 					case Text(v): ws.send(v);
 					case Binary(v): ws.send(v.toBytes().getData());
-					default: // not supported
 				}
 				return Resume;
 			}).handle(function(o) switch o {

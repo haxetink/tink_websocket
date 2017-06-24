@@ -11,7 +11,7 @@ using tink.CoreApi;
 
 @:require(tink_http_middleware)
 class WebSocket implements MiddlewareObject {
-	var ws:tink.websocket.Handler;
+	var ws:ServerHandler;
 	
 	public function new(ws)
 		this.ws = ws;
@@ -23,7 +23,11 @@ class WebSocket implements MiddlewareObject {
 				case [Success(_), Plain(src)]:
 					Future.sync(new OutgoingResponse(
 						new OutgoingHandshakeResponseHeader(header.key),
-						(ws(src.parseStream(new Parser())):Stream<Chunk, Noise>)
+						ws({
+							clientIp: req.clientIp,
+							header: header,
+							stream: src.parseStream(new Parser()),
+						}).toUnmaskedChunkStream()
 					));
 				default:
 					handler.process(req);

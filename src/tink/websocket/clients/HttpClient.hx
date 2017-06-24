@@ -3,7 +3,7 @@ package tink.websocket.clients;
 import haxe.io.Bytes;
 import tink.Url;
 import tink.websocket.Client;
-import tink.websocket.Message;
+import tink.websocket.RawMessage;
 import tink.websocket.MaskingKey;
 import tink.websocket.IncomingHandshakeResponseHeader;
 import tink.websocket.OutgoingHandshakeRequestHeader;
@@ -31,16 +31,16 @@ class HttpClient implements Client {
 		this.client = client;
 	}
 	
-	public function connect(outgoing:IdealStream<Message>):RealStream<Message> {
+	public function connect(outgoing:MessageStream<Noise>):MessageStream<Error> {
 		
 		var requestHeader = new OutgoingHandshakeRequestHeader(url);
 		var promise = client.request(new OutgoingRequest(
 			requestHeader,
-			MessageStream.lift(outgoing).toMaskedChunkStream(MaskingKey.random)
+			RawMessageStream.lift(outgoing).toMaskedChunkStream(MaskingKey.random)
 		))
 			.next(function(res) {
 				return Promise.lift((res.header:IncomingHandshakeResponseHeader).validate(requestHeader.accept))
-					.next(function(_) return MessageStream.ofChunkStream(res.body.parseStream(new Parser())));
+					.next(function(_):MessageStream<Error> return RawMessageStream.ofChunkStream(res.body.parseStream(new Parser())));
 			});
 		
 		return Stream.promise(promise);

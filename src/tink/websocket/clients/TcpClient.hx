@@ -3,7 +3,7 @@ package tink.websocket.clients;
 import haxe.io.Bytes;
 import tink.Url;
 import tink.websocket.Client;
-import tink.websocket.Message;
+import tink.websocket.RawMessage;
 import tink.websocket.MaskingKey;
 import tink.streams.Stream;
 import tink.streams.IdealStream;
@@ -20,11 +20,12 @@ class TcpClient implements Client {
 	public function new(url)
 		this.url = url;
 	
-	public function connect(outgoing:IdealStream<Message>):RealStream<Message> {
+	public function connect(outgoing:MessageStream<Noise>):MessageStream<Error> {
 		return Stream.promise(Future.async(function(cb) {
-			var handler = Connector.wrap(url, function(incoming) {
-				cb(Success(MessageStream.ofChunkStream(incoming)));
-				return MessageStream.lift(outgoing).toMaskedChunkStream(MaskingKey.random);
+			var handler = Connector.wrap(url, function(stream) {
+				cb(Success(MessageStream.fromRawStream(stream)));
+				// var pong = new PongStream(stream).idealize(null);
+				return RawMessageStream.lift(outgoing); //.blend(pong);
 			});
 			
 			var port = switch [url.host.port, url.scheme] {

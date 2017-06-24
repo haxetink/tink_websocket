@@ -25,22 +25,21 @@ class ConnectorTest {
 			var sender = Signal.trigger();
 			var outgoing = new SignalStream(sender);
 			var handler = Connector.wrap(url, function(stream) {
-				MessageStream.ofChunkStream(stream)
-					.forEach(function(message:Message) {
-						switch message {
-							case Text(v): asserts.assert(v == 'payload' + ++c);
-							default: asserts.fail('Unexpected message');
-						}
-						if(c == n) cb(Noise);
-						return c < n ? Resume : Finish;
-					});
+				stream.forEach(function(message:RawMessage) {
+					switch message {
+						case Text(v): asserts.assert(v == 'payload' + ++c);
+						default: asserts.fail('Unexpected message');
+					}
+					if(c == n) cb(Noise);
+					return c < n ? Resume : Finish;
+				});
 				
-				return MessageStream.lift(outgoing).toUnmaskedChunkStream();
+				return RawMessageStream.lift(outgoing);
 			});
 			
 			tink.tcp.nodejs.NodejsConnector.connect({host: host, port: port}, handler).handle(function(o) trace(Std.string(o)));
 			
-			for(i in 0...n) sender.trigger(Data(Message.Text('payload' + (i + 1))));
+			for(i in 0...n) sender.trigger(Data(RawMessage.Text('payload' + (i + 1))));
 			sender.trigger(End);
 		});
 	}

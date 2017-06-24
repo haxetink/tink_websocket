@@ -5,3 +5,5 @@
 -lib tink_unittest
 -lib tink_tcp
 -lib tink_http_middleware
+
+--macro include('tink.websocket')
