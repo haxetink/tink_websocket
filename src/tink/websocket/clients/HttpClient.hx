@@ -18,7 +18,9 @@ import js.html.*;
 using tink.io.Source;
 using tink.CoreApi;
 
-// Only works if the http clients supports streaming
+/**
+ *  Only works if the http client supports streaming
+ */
 class HttpClient implements Client {
 	
 	var url:Url;
