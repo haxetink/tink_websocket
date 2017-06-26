@@ -24,8 +24,8 @@ class TcpClient implements Client {
 		return Stream.promise(Future.async(function(cb) {
 			var handler = Connector.wrap(url, function(stream) {
 				cb(Success(MessageStream.fromRawStream(stream)));
-				// var pong = new PongStream(stream).idealize(null);
-				return RawMessageStream.lift(outgoing); //.blend(pong);
+				var pong = new PongStream(stream).idealize(Empty.make());
+				return RawMessageStream.lift(outgoing).blend(pong);
 			});
 			
 			var port = switch [url.host.port, url.scheme] {
