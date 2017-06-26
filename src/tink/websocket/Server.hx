@@ -14,6 +14,7 @@ interface ConnectedClient {
 	var clientIp(default, null):String;
 	var header(default, null):IncomingRequestHeader;
 	var closed(default, null):Future<Noise>;
-	var messageReceived(default, null):Signal<Chunk>;
-	function send(chunk:Chunk):Void;
+	var messageReceived(default, null):Signal<Message>;
+	function send(message:Message):Void;
+	function close():Void;
 }

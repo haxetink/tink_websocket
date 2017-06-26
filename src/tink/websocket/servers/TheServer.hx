@@ -32,6 +32,7 @@ class TheServer implements Server {
 		clients.push(client);
 		client.closed.handle(function() clients.remove(client));
 		connectedTrigger.trigger(client);
+		client.listen();
 		return client.outgoing;
 	}
 }
@@ -42,40 +43,52 @@ class TheConnectedClient implements ConnectedClient {
 	public var header(default, null):IncomingRequestHeader;
 	
 	public var closed(default, null):Future<Noise>;
-	public var messageReceived(default, null):Signal<Chunk>;
+	public var messageReceived(default, null):Signal<Message>;
 	var closedTrigger:FutureTrigger<Noise>;
-	var messageRecievedTrigger:SignalTrigger<Chunk>;
+	var messageRecievedTrigger:SignalTrigger<Message>;
 	
 	var outgoingTrigger:SignalTrigger<Yield<RawMessage, Noise>>;
 	var outgoing:RawMessageStream<Noise>;
 	
-	public function new(clientIp, header, incoming:RawMessageStream<Error>) {
+	var incoming:RawMessageStream<Error>;
+	
+	public function new(clientIp, header, incoming) {
 		
 		this.clientIp = clientIp;
 		this.header = header;
+		this.incoming = incoming;
 		
 		closed = closedTrigger = Future.trigger();
 		messageReceived = messageRecievedTrigger = Signal.trigger();
 		
 		outgoingTrigger = Signal.trigger();
 		outgoing = new SignalStream(outgoingTrigger);
-		
+	}
+	
+	function listen() {
 		incoming.forEach(function(message:RawMessage) {
 			switch message {
-				case Text(v): messageRecievedTrigger.trigger(v);
-				case Binary(v): messageRecievedTrigger.trigger(v);
+				case Text(v): messageRecievedTrigger.trigger(Text(v));
+				case Binary(v): messageRecievedTrigger.trigger(Binary(v));
 				case Ping(v): outgoingTrigger.trigger(Data(Pong(v)));
 				case Pong(_): // do nothing;
 				case ConnectionClose:
-					closedTrigger.trigger(Noise);
-					outgoingTrigger.trigger(End);
+					close();
 					return Finish;
 			}
 			return Resume;
 		}).eager();
 	}
 	
-	public function send(chunk:Chunk):Void {
-		outgoingTrigger.trigger(Data(Binary(chunk)));
+	public function send(message:Message):Void {
+		outgoingTrigger.trigger(Data(switch message {
+			case Text(v): Text(v);
+			case Binary(v): Binary(v);
+		}));
+	}
+	
+	public function close() {
+		outgoingTrigger.trigger(End);
+		closedTrigger.trigger(Noise);
 	}
 }
