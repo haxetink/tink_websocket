@@ -5,7 +5,7 @@ import haxe.crypto.*;
 import tink.http.Response;
 import tink.http.Header;
 
-class OutgoingHandshakeResponseHeader extends ResponseHeader {
+class OutgoingHandshakeResponseHeader extends ResponseHeaderBase {
 	
 	public var key(default, null):String;
 	public var accept(default, null):String;

@@ -13,22 +13,35 @@ using tink.CoreApi;
 class WebSocket implements MiddlewareObject {
 	var ws:ServerHandler;
 	
-	public function new(ws)
+	public function new(ws, ?authenticator) {
 		this.ws = ws;
+		if(authenticator != null) authenticate = authenticator;
+	}
+	
+	dynamic function authenticate(header:RequestHeader):Promise<Noise> {
+		return Noise;
+	}
 		
 	public function apply(handler:tink.http.Handler):tink.http.Handler {
 		return function(req:IncomingRequest):Future<OutgoingResponse> {
 			var header:IncomingHandshakeRequestHeader = req.header;
 			return switch [header.validate(), req.body] {
 				case [Success(_), Plain(src)]:
-					Future.sync(new OutgoingResponse(
-						new OutgoingHandshakeResponseHeader(header.key),
-						ws({
-							clientIp: req.clientIp,
-							header: header,
-							stream: src.parseStream(new Parser()),
-						}).toUnmaskedChunkStream()
-					));
+					authenticate(req.header).flatMap(function(o) {
+						return Future.sync(switch o {
+							case Success(_):
+								new OutgoingResponse(
+									new OutgoingHandshakeResponseHeader(header.key),
+									ws({
+										clientIp: req.clientIp,
+										header: header,
+										stream: src.parseStream(new Parser()),
+									}).toUnmaskedChunkStream()
+								);
+							case Failure(e):
+								OutgoingResponse.reportError(e);
+						});
+					});
 				default:
 					handler.process(req);
 			}
