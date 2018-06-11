@@ -10,5 +10,5 @@ interface Client {
 	 *  @param outgoing - Outgoing message stream
 	 *  @return Incoming message stream
 	 */
-	function connect(outgoing:MessageStream<Noise>):MessageStream<Error>;
+	function connect(outgoing:RawMessageStream<Noise>):RawMessageStream<Error>;
 }

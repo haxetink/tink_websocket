@@ -19,7 +19,7 @@ class TheClient {
 	var connectedState:State<Bool>;
 	var messageReceivedTrigger:SignalTrigger<Message>;
 	
-	var outgoingTrigger:SignalTrigger<Yield<Message, Noise>>;
+	var outgoingTrigger:SignalTrigger<Yield<RawMessage, Noise>>;
 	
 	public function new(client) {
 		this.client = client;
@@ -30,10 +30,11 @@ class TheClient {
 		messageReceivedTrigger = Signal.trigger();
 		connectedState = new State(true);
 		
-		client.connect(outgoing).forEach(function(message:Message) {
+		client.connect(outgoing).forEach(function(message:RawMessage) {
 			switch message {
 				case Text(v): messageReceivedTrigger.trigger(Text(v));
 				case Binary(v): messageReceivedTrigger.trigger(Binary(v));
+				case _: // discard
 			}
 			return Resume;
 		}).handle(function(o) switch o {
@@ -44,7 +45,10 @@ class TheClient {
 	}
 	
 	public function send(message:Message) {
-		outgoingTrigger.trigger(Data(message));
+		outgoingTrigger.trigger(Data(switch message {
+			case Text(v): RawMessage.Text(v);
+			case Binary(v): RawMessage.Binary(v);
+		}));
 	}
 	
 	public function close() {

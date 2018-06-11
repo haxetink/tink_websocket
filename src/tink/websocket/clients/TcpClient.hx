@@ -20,10 +20,11 @@ class TcpClient implements Client {
 	public function new(url)
 		this.url = url;
 	
-	public function connect(outgoing:MessageStream<Noise>):MessageStream<Error> {
-		return Stream.promise(Future.async(function(cb) {
+	public function connect(outgoing:RawMessageStream<Noise>):RawMessageStream<Error> {
+		var stream = Stream.promise(Future.async(function(cb) {
 			var handler = Connector.wrap(url, function(stream) {
-				cb(Success(MessageStream.fromRawStream(stream)));
+				trace('got stream');
+				cb(Success(stream));
 				var pong = new PongStream(stream).idealize(function(e) return Empty.make());
 				return RawMessageStream.lift(outgoing).blend(pong);
 			});
@@ -33,7 +34,16 @@ class TcpClient implements Client {
 				case [null, _]: 80;
 				case [v, _]: v;
 			}
-			tink.tcp.nodejs.NodejsConnector.connect({host: url.host.name, port: port}, handler).eager();
+			
+			tink.tcp.nodejs.NodejsConnector.connect({host: url.host.name, port: port}, handler)
+				.handle(function(o) trace(o));
 		}));
+		
+		stream.forEach(function(o) {
+			trace(o);
+			return Resume;
+		}).handle(function(o) trace(o));
+		
+		return stream;
 	}
 }

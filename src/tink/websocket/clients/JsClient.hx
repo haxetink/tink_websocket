@@ -3,7 +3,7 @@ package tink.websocket.clients;
 import haxe.io.Bytes;
 import tink.Url;
 import tink.websocket.Client;
-import tink.websocket.Message;
+import tink.websocket.RawMessage;
 import tink.streams.Stream;
 import tink.streams.IdealStream;
 import tink.streams.RealStream;
@@ -18,7 +18,7 @@ class JsClient implements Client {
 	public function new(url)
 		this.url = url;
 	
-	public function connect(outgoing:MessageStream<Noise>):MessageStream<Error> {
+	public function connect(outgoing:RawMessageStream<Noise>):RawMessageStream<Error> {
 		var ws = new WebSocket(url);
 		ws.binaryType = BinaryType.ARRAYBUFFER;
 		
@@ -38,6 +38,7 @@ class JsClient implements Client {
 				switch message {
 					case Text(v): ws.send(v);
 					case Binary(v): ws.send(v.toBytes().getData());
+					case _: // js client cannot handle raw messages
 				}
 				return Resume;
 			}).handle(function(o) switch o {

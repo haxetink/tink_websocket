@@ -31,7 +31,7 @@ class HttpClient implements Client {
 		this.client = client;
 	}
 	
-	public function connect(outgoing:MessageStream<Noise>):MessageStream<Error> {
+	public function connect(outgoing:RawMessageStream<Noise>):RawMessageStream<Error> {
 		
 		var requestHeader = new OutgoingHandshakeRequestHeader(url);
 		var promise = client.request(new OutgoingRequest(
@@ -40,7 +40,7 @@ class HttpClient implements Client {
 		))
 			.next(function(res) {
 				return Promise.lift((res.header:IncomingHandshakeResponseHeader).validate(requestHeader.accept))
-					.next(function(_):MessageStream<Error> return RawMessageStream.ofChunkStream(res.body.parseStream(new Parser())));
+					.next(function(_) return RawMessageStream.ofChunkStream(res.body.parseStream(new Parser())));
 			});
 		
 		return Stream.promise(promise);
