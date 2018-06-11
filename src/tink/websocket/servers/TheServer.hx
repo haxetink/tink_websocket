@@ -45,7 +45,7 @@ class TheConnectedClient implements ConnectedClient {
 	public var closed(default, null):Future<Noise>;
 	public var messageReceived(default, null):Signal<Message>;
 	var closedTrigger:FutureTrigger<Noise>;
-	var messageRecievedTrigger:SignalTrigger<Message>;
+	var messageReceivedTrigger:SignalTrigger<Message>;
 	
 	var outgoingTrigger:SignalTrigger<Yield<RawMessage, Noise>>;
 	var outgoing:RawMessageStream<Noise>;
@@ -59,7 +59,7 @@ class TheConnectedClient implements ConnectedClient {
 		this.incoming = incoming;
 		
 		closed = closedTrigger = Future.trigger();
-		messageReceived = messageRecievedTrigger = Signal.trigger();
+		messageReceived = messageReceivedTrigger = Signal.trigger();
 		
 		outgoingTrigger = Signal.trigger();
 		outgoing = new SignalStream(outgoingTrigger);
@@ -68,8 +68,8 @@ class TheConnectedClient implements ConnectedClient {
 	function listen() {
 		incoming.forEach(function(message:RawMessage) {
 			switch message {
-				case Text(v): messageRecievedTrigger.trigger(Text(v));
-				case Binary(v): messageRecievedTrigger.trigger(Binary(v));
+				case Text(v): messageReceivedTrigger.trigger(Text(v));
+				case Binary(v): messageReceivedTrigger.trigger(Binary(v));
 				case Ping(v): outgoingTrigger.trigger(Data(Pong(v)));
 				case Pong(_): // do nothing;
 				case ConnectionClose:
