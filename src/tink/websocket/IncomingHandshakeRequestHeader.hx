@@ -3,6 +3,7 @@ package tink.websocket;
 import tink.http.Request;
 import tink.io.StreamParser;
 
+using StringTools;
 using tink.CoreApi;
 
 abstract IncomingHandshakeRequestHeader(IncomingRequestHeader) from IncomingRequestHeader to IncomingRequestHeader {
@@ -12,17 +13,17 @@ abstract IncomingHandshakeRequestHeader(IncomingRequestHeader) from IncomingRequ
 	public function validate() {
 		
 		var errors = [];
-		function ensureHeader(name:String, ?value:String) 
+		function ensureHeader(name:String, check:String->Bool) 
 			switch this.byName(name) {
 				case Failure(f): errors.push('Header $name not found');
-				case Success(v) if(value == null || (v:String).toLowerCase() == value): // ok
-				case Success(v): errors.push('Header value for $name is expected to be $value, but got $v');
+				case Success(v) if(check(v)): // ok
+				case Success(v): errors.push('Invalid header "$name: $v"');
 			}
 			
-		ensureHeader('upgrade', 'websocket');
-		ensureHeader('connection', 'upgrade');
-		ensureHeader('sec-websocket-key');
-		ensureHeader('sec-websocket-version', '13');
+		ensureHeader('upgrade', function(v) return v == 'websocket');
+		ensureHeader('connection', function(v) return v != null && [for(i in v.split(',')) i.trim().toLowerCase()].indexOf('upgrade') != -1);
+		ensureHeader('sec-websocket-key', function(v) return v != null);
+		ensureHeader('sec-websocket-version', function(v) return v == '13');
 		
 		return 
 			if(errors.length > 0)
