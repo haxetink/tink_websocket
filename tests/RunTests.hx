@@ -12,6 +12,7 @@ class RunTests {
 			#if nodejs new AcceptorTest(), #end
 			new ParserTest(),
 			new ClientTest(),
+			new HeaderTest(),
 		])).handle(Runner.exit);
 	}
 }
