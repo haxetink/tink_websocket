@@ -1,3 +1,4 @@
+
 package tink.websocket.clients;
 
 import haxe.io.Bytes;
@@ -21,7 +22,7 @@ using tink.CoreApi;
 /**
  *  Only works if the http client supports streaming
  */
-class HttpClient implements Client {
+class HttpConnector implements Connector {
 	
 	var url:Url;
 	var client:tink.http.Client;

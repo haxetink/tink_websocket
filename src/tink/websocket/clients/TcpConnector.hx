@@ -14,7 +14,7 @@ import js.html.*;
 using tink.websocket.ClientHandler;
 using tink.CoreApi;
 
-class TcpClient implements Client {
+class TcpConnector implements Connector {
 	
 	var url:Url;
 	

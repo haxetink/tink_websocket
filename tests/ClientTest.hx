@@ -4,6 +4,7 @@ import haxe.io.Bytes;
 import tink.unit.*;
 import tink.streams.Stream;
 import tink.websocket.*;
+import tink.websocket.Client;
 import tink.websocket.clients.*;
 import tink.Chunk;
 
@@ -18,17 +19,17 @@ class ClientTest {
 	public function new() {}
 	
 	#if nodejs
-	public function tcp() return run(asserts, new TcpClient(url));
-	// public function http() return run(asserts, new HttpClient(url, new tink.http.clients.NodeClient())); // FIXME: no res in http client request?
+	public function tcp() return run(asserts, new TcpConnector(url));
+	// public function http() return run(asserts, new HttpConnector(url, new tink.http.clients.NodeClient())); // FIXME: no res in http client request?
 	#elseif js
-	public function js() return run(asserts, new JsClient(url));
+	public function js() return run(asserts, new JsConnector(url));
 	#end
 	
-	function run(asserts:AssertionBuffer, client:Client) {
+	function run(asserts:AssertionBuffer, connector:Connector) {
 		var c = 0;
 		var n = 7;
 		var sender = Signal.trigger();
-		client.connect(new SignalStream(sender)).forEach(function(message:RawMessage) {
+		connector.connect(new SignalStream(sender)).forEach(function(message:RawMessage) {
 			switch message {
 				case Text(v): asserts.assert(v == 'payload' + c++);
 				default: asserts.fail('Unexpected message');

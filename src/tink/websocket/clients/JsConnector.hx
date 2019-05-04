@@ -11,7 +11,7 @@ import js.html.*;
 
 using tink.CoreApi;
 
-class JsClient implements Client {
+class JsConnector implements Connector {
 	
 	var url:String;
 	

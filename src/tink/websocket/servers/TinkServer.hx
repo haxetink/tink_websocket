@@ -11,7 +11,7 @@ import tink.Chunk;
 
 using tink.CoreApi;
 
-class TheServer implements Server {
+class TinkServer implements Server {
 	
 	public var clients(default, null):Array<ConnectedClient>;
 	public var connected(default, null):Signal<ConnectedClient>;
@@ -38,7 +38,7 @@ class TheServer implements Server {
 }
 
 @:allow(tink.websocket)
-class TheConnectedClient implements ConnectedClient {
+class TinkConnectedClient implements ConnectedClient {
 	public var clientIp(default, null):String;
 	public var header(default, null):IncomingRequestHeader;
 	
