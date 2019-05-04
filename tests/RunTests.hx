@@ -6,10 +6,10 @@ import tink.unit.*;
 
 class RunTests {
 	static function main() {
-		// tink.websocket.servers.TheServer;
+		tink.websocket.IncomingHandshakeRequestHeader;
 		Runner.run(TestBatch.make([
-			#if nodejs new ConnectorTest(), #end
-			#if nodejs new AcceptorTest(), #end
+			#if nodejs new TcpConnectorTest(), #end
+			#if nodejs new TcpAcceptorTest(), #end
 			new ParserTest(),
 			new ClientTest(),
 			new HeaderTest(),
