@@ -14,13 +14,13 @@ using tink.CoreApi;
 class TinkServer implements Server {
 	
 	public var clients(default, null):Array<ConnectedClient>;
-	public var connected(default, null):Signal<ConnectedClient>;
+	public var clientConnected(default, null):Signal<ConnectedClient>;
 	
 	var connectedTrigger:SignalTrigger<ConnectedClient>;
 	
 	public function new() {
 		clients = [];
-		connected = connectedTrigger = Signal.trigger();
+		clientConnected = connectedTrigger = Signal.trigger();
 	}
 	
 	public function close():Future<Noise> {

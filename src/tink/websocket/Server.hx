@@ -6,7 +6,7 @@ import tink.websocket.Message;
 using tink.CoreApi;
 
 interface Server {
-	var connected(default, null):Signal<ConnectedClient>;
+	var clientConnected(default, null):Signal<ConnectedClient>;
 	function close():Future<Noise>;
 }
 

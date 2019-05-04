@@ -12,13 +12,13 @@ import js.node.http.IncomingMessage;
 using tink.CoreApi;
 
 class NodeWsServer implements Server {
-	public var connected(default, null):Signal<ConnectedClient>;
+	public var clientConnected(default, null):Signal<ConnectedClient>;
 	
 	var server:NativeServer;
 	
 	public function new(opt) {
 		server = new NativeServer(opt);
-		connected = Signal.generate(function(trigger) {
+		clientConnected = Signal.generate(function(trigger) {
 			server.on('connection', function(socket, request:IncomingMessage) {
 				trigger((new NodeWsConnectedClient(
 					request.connection.remoteAddress,
