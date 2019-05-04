@@ -7,6 +7,7 @@ using tink.CoreApi;
 
 interface Server {
 	var clientConnected(default, null):Signal<ConnectedClient>;
+	var errors(default, null):Signal<Error>;
 	function close():Future<Noise>;
 }
 

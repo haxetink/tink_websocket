@@ -13,11 +13,16 @@ using tink.CoreApi;
 
 class NodeWsServer implements Server {
 	public var clientConnected(default, null):Signal<ConnectedClient>;
+	public var errors(default, null):Signal<Error>;
 	
 	var server:NativeServer;
 	
 	public function new(opt) {
 		server = new NativeServer(opt);
+		errors = Signal.generate(function(trigger) {
+			server.on('error', function(err) trigger(Error.ofJsError(err)));
+		});
+		
 		clientConnected = Signal.generate(function(trigger) {
 			server.on('connection', function(socket, request:IncomingMessage) {
 				trigger((new NodeWsConnectedClient(

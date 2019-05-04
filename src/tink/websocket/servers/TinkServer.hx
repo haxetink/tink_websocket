@@ -15,12 +15,15 @@ class TinkServer implements Server {
 	
 	public var clients(default, null):Array<ConnectedClient>;
 	public var clientConnected(default, null):Signal<ConnectedClient>;
+	public var errors(default, null):Signal<Error>;
 	
 	var connectedTrigger:SignalTrigger<ConnectedClient>;
+	var errorsTrigger:SignalTrigger<Error>;
 	
 	public function new() {
 		clients = [];
 		clientConnected = connectedTrigger = Signal.trigger();
+		errors = errorsTrigger = Signal.trigger();
 	}
 	
 	public function close():Future<Noise> {
