@@ -1,6 +1,6 @@
 -cp tests
--main Playground
+-main MiddlewareExample
 -lib hxnodejs
 -lib tink_websocket
 -lib tink_http_middleware
--js bin/playground.js
+-js bin/middleware_example.js
