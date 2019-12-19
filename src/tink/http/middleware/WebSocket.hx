@@ -25,7 +25,6 @@ class WebSocket implements MiddlewareObject {
 	public function apply(handler:tink.http.Handler):tink.http.Handler {
 		return function(req:IncomingRequest):Future<OutgoingResponse> {
 			var header:IncomingHandshakeRequestHeader = req.header;
-			trace('ws middleware');
 			return switch [header.validate(), req.body] {
 				case [Success(_), Plain(src)]:
 					authenticate(req.header).flatMap(function(o) {
