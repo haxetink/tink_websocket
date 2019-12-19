@@ -31,7 +31,7 @@ class TinkServer implements Server {
 	}
 	
 	public function handle(i):RawMessageStream<Noise> {
-		var client = new TheConnectedClient(i.clientIp, i.header, i.stream);
+		var client = new TinkConnectedClient(i.clientIp, i.header, i.stream);
 		clients.push(client);
 		client.closed.handle(function() clients.remove(client));
 		connectedTrigger.trigger(client);

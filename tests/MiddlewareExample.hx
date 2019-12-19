@@ -7,15 +7,29 @@ import tink.http.Response;
 import tink.http.Request;
 import tink.http.Handler;
 import tink.websocket.ServerHandler;
+import tink.websocket.servers.TinkServer;
 import tink.streams.Stream.Empty;
 
 using tink.CoreApi;
 
 class MiddlewareExample {
 	static function main() {
-		var container = new NodeContainer(8081, {upgradable: true});
+		var server = new TinkServer();
+		server.clientConnected.handle(function(client) {
+			trace('client connected from ${client.clientIp}');
+			client.messageReceived.handle(function(message) trace(message));
+			client.send(Text('Hello!'));
+		});
+		
 		var handler:Handler = req -> Future.sync(('Done':OutgoingResponse));
-		handler = handler.applyMiddleware(new WebSocket(websocketHandler));
+		
+		handler = handler.applyMiddleware(new WebSocket(
+			// Choose either one from the following 2 lines:
+				// websocketHandler
+				server.handle
+		));
+		
+		var container = new NodeContainer(8081, {upgradable: true});
 		container.run(handler).eager();
 	}
 	
